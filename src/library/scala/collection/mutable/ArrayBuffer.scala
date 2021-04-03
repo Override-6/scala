@@ -273,9 +273,9 @@ object ArrayBuffer extends StrictOptimizedSeqFactory[ArrayBuffer] {
       var newSize: Long = length
       newSize = math.max(newSize * 2, DefaultInitialSize)
       while (newSize < n) newSize *= 2
-      if (newSize <= Int.MaxValue) newSize.toInt
-      else if (end == Int.MaxValue) throw new Exception(s"Collections can not have more than ${Int.MaxValue} elements")
-      else Int.MaxValue
+      if (newSize <= Int.MaxValue - 8) newSize.toInt
+      else if (end == Int.MaxValue - 8) throw new Exception(s"Collections can not have more than ${Int.MaxValue} elements")
+      else Int.MaxValue - 8
     }
     if (n <= array.length) array
     else new Array[AnyRef](resizeEnsuring(array.length, end, n)).tap(Array.copy(array, 0, _, 0, end))
@@ -284,10 +284,10 @@ object ArrayBuffer extends StrictOptimizedSeqFactory[ArrayBuffer] {
     def resizeDown(length: Int, requiredLength: Int): Int = {
       var newSize: Long = length
       // ensure that newSize is a power of 2 (this tweak is not motivated)
-      if (newSize == Int.MaxValue) newSize += 1
+      if (newSize == Int.MaxValue - 8) newSize += 1
       val minLength = math.max(requiredLength, DefaultInitialSize)
       while (newSize / 2 >= minLength) newSize /= 2
-      if (newSize <= Int.MaxValue) newSize.toInt
+      if (newSize <= Int.MaxValue - 8) newSize.toInt
       else Int.MaxValue
     }
     if (requiredLength >= array.length) array
